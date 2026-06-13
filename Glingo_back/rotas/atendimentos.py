@@ -1,6 +1,6 @@
 # Rotas de Atendimentos e Mensagens
 
-from flask import Blueprint, request, jsonify  # type: ignore[import]
+from flask import Blueprint, request, jsonify
 from banco.conexao import conectar
 
 atendimentos_bp = Blueprint('atendimentos', __name__)

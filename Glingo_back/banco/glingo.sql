@@ -86,8 +86,8 @@ INSERT INTO idioma (nome, descricao) VALUES
 ('Mandarim', 'Curso de língua chinesa mandarim');
 
 INSERT INTO turma (idioma_id, nivel, professor, horario, modalidade, vagas_total, vagas_restantes) VALUES
-(1, 'Iniciante', 'Prof. Ana Lima', 'Ter/Qui 19h-20h30', 'Presencial', 20, 8),
-(1, 'Intermediário', 'Prof. Carlos Souza', 'Seg/Qua 18h-19h30', 'Online', 20, 3),
-(2, 'Avançado', 'Prof. Maria Torres', 'Sex 19h-21h', 'Online', 20, 12),
-(3, 'Iniciante', 'Prof. João Melo', 'Sáb 09h-11h', 'Presencial', 15, 0),
-(4, 'Iniciante', 'Prof. Wei Zhang', 'Ter/Qui 18h-19h30', 'Presencial', 15, 6);
+(1, 'Iniciante', 'Prof. Allie Hayes', 'Ter/Qui 19h-20h30', 'Presencial', 20, 8),
+(1, 'Intermediário', 'Prof. Jonh Logan', 'Seg/Qua 18h-19h30', 'Online', 20, 3),
+(2, 'Avançado', 'Prof. Hanna Wells', 'Sex 19h-21h', 'Online', 20, 12),
+(3, 'Iniciante', 'Prof. Dean Di Laurentis', 'Sáb 09h-11h', 'Presencial', 15, 0),
+(4, 'Iniciante', 'Prof. Jonh Tucker', 'Ter/Qui 18h-19h30', 'Presencial', 15, 6);
