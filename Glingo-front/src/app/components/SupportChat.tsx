@@ -4,7 +4,7 @@ import { atendimentosApi, type Atendimento, type Mensagem } from "../../services
 
 const TIPOS = ["Dúvida", "Cancelamento", "Troca de turma", "Outro"];
 
-const GEMINI_API_KEY = (import.meta as any).env?.VITE_GEMINI_API_KEY ?? "";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? "";
 
 async function chamarGemini(mensagens: { role: string; text: string }[], tipo: string): Promise<string> {
   const sistema = `Você é a assistente virtual da Glingo, uma escola de idiomas. 
@@ -20,7 +20,7 @@ Responda sempre em português brasileiro. Seja concisa mas acolhedora.`;
   }));
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

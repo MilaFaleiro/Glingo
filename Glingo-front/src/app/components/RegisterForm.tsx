@@ -1,8 +1,29 @@
 import { useState } from "react";
 import { alunosApi, professoresApi } from "../../services/api";
 
-interface Props {
-  onSucesso?: () => void;
+interface Props { onSucesso?: () => void; }
+
+function validarCPF(cpf: string): boolean {
+  const nums = cpf.replace(/\D/g, "");
+  if (nums.length !== 11 || /^(\d)\1+$/.test(nums)) return false;
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += parseInt(nums[i]) * (10 - i);
+  let dig = 11 - (soma % 11);
+  if (dig >= 10) dig = 0;
+  if (dig !== parseInt(nums[9])) return false;
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += parseInt(nums[i]) * (11 - i);
+  dig = 11 - (soma % 11);
+  if (dig >= 10) dig = 0;
+  return dig === parseInt(nums[10]);
+}
+
+function formatCPF(value: string): string {
+  const nums = value.replace(/\D/g, "").slice(0, 11);
+  return nums.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+             .replace(/(\d{3})(\d{3})(\d{3})/, "$1.$2.$3")
+             .replace(/(\d{3})(\d{3})/, "$1.$2")
+             .replace(/(\d{3})/, "$1");
 }
 
 export default function RegisterForm({ onSucesso }: Props) {
@@ -15,7 +36,6 @@ export default function RegisterForm({ onSucesso }: Props) {
     nome: "", cpf: "", email: "", telefone: "",
     data_nasc: "", senha: "", confirmSenha: "",
   });
-
   const [profData, setProfData] = useState({
     nome: "", email: "", ra: "", telefone: "",
     especialidade: "", senha: "", confirmSenha: "",
@@ -23,15 +43,14 @@ export default function RegisterForm({ onSucesso }: Props) {
 
   const handleSubmitAluno = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (alunoData.senha !== alunoData.confirmSenha) {
-      setErro("As senhas não coincidem."); return;
-    }
+    if (!validarCPF(alunoData.cpf)) { setErro("CPF inválido. Verifique o número digitado."); return; }
+    if (alunoData.senha !== alunoData.confirmSenha) { setErro("As senhas não coincidem."); return; }
+    if (alunoData.senha.length < 6) { setErro("A senha deve ter pelo menos 6 caracteres."); return; }
     setErro(null); setLoading(true);
     try {
       await alunosApi.cadastrar({
-        nome: alunoData.nome, cpf: alunoData.cpf,
-        email: alunoData.email, senha: alunoData.senha,
-        telefone: alunoData.telefone,
+        nome: alunoData.nome, cpf: alunoData.cpf, email: alunoData.email,
+        senha: alunoData.senha, telefone: alunoData.telefone,
         data_nasc: alunoData.data_nasc || undefined,
       });
       setSucesso(true);
@@ -42,16 +61,13 @@ export default function RegisterForm({ onSucesso }: Props) {
 
   const handleSubmitProf = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (profData.senha !== profData.confirmSenha) {
-      setErro("As senhas não coincidem."); return;
-    }
+    if (profData.senha !== profData.confirmSenha) { setErro("As senhas não coincidem."); return; }
+    if (profData.senha.length < 6) { setErro("A senha deve ter pelo menos 6 caracteres."); return; }
     setErro(null); setLoading(true);
     try {
       await professoresApi.cadastrar({
-        nome: profData.nome, email: profData.email,
-        senha: profData.senha, ra: profData.ra,
-        telefone: profData.telefone,
-        especialidade: profData.especialidade,
+        nome: profData.nome, email: profData.email, senha: profData.senha,
+        ra: profData.ra, telefone: profData.telefone, especialidade: profData.especialidade,
       });
       setSucesso(true);
     } catch (err: unknown) {
@@ -65,10 +81,8 @@ export default function RegisterForm({ onSucesso }: Props) {
         <div className="text-5xl mb-4">🎉</div>
         <h3 className="text-xl font-bold text-gray-800 mb-2">Cadastro realizado!</h3>
         <p className="text-gray-600 mb-6">Sua conta foi criada com sucesso.</p>
-        <button
-          onClick={onSucesso}
-          className="w-full bg-[#2563eb] text-white py-3 rounded-xl font-semibold hover:bg-[#1e4d7b] transition-colors"
-        >
+        <button onClick={onSucesso}
+          className="w-full bg-[#2563eb] text-white py-3 rounded-xl font-semibold hover:bg-[#1e4d7b] transition-colors">
           Fazer login
         </button>
       </div>
@@ -81,46 +95,41 @@ export default function RegisterForm({ onSucesso }: Props) {
     <div className="bg-white rounded-2xl shadow-md p-8 max-w-md mx-auto">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Criar conta</h2>
 
-      {/* Toggle Aluno / Professor */}
       <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
-        <button
-          onClick={() => { setTipo("aluno"); setErro(null); }}
-          className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors ${
-            tipo === "aluno" ? "bg-white text-[#2563eb] shadow-sm" : "text-gray-500"
-          }`}
-        >
+        <button onClick={() => { setTipo("aluno"); setErro(null); }}
+          className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors ${tipo === "aluno" ? "bg-white text-[#2563eb] shadow-sm" : "text-gray-500"}`}>
           Sou Aluno
         </button>
-        <button
-          onClick={() => { setTipo("professor"); setErro(null); }}
-          className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors ${
-            tipo === "professor" ? "bg-white text-[#2563eb] shadow-sm" : "text-gray-500"
-          }`}
-        >
+        <button onClick={() => { setTipo("professor"); setErro(null); }}
+          className={`flex-1 py-2 rounded-lg font-medium text-sm transition-colors ${tipo === "professor" ? "bg-white text-[#2563eb] shadow-sm" : "text-gray-500"}`}>
           Sou Professor
         </button>
       </div>
 
-      {erro && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-4 text-sm">
-          {erro}
-        </div>
-      )}
+      {erro && <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 mb-4 text-sm">{erro}</div>}
 
-      {/* Formulário Aluno */}
       {tipo === "aluno" && (
         <form onSubmit={handleSubmitAluno} className="space-y-4">
           <input type="text" placeholder="Nome completo" required className={inputClass}
             value={alunoData.nome} onChange={(e) => setAlunoData({ ...alunoData, nome: e.target.value })} />
-          <input type="text" placeholder="CPF (000.000.000-00)" required className={inputClass}
-            value={alunoData.cpf} onChange={(e) => setAlunoData({ ...alunoData, cpf: e.target.value })} />
+          <div>
+            <input type="text" placeholder="CPF (000.000.000-00)" required className={inputClass}
+              value={alunoData.cpf}
+              onChange={(e) => setAlunoData({ ...alunoData, cpf: formatCPF(e.target.value) })} />
+            {alunoData.cpf.replace(/\D/g, "").length === 11 && !validarCPF(alunoData.cpf) && (
+              <p className="text-red-500 text-xs mt-1">CPF inválido</p>
+            )}
+            {alunoData.cpf.replace(/\D/g, "").length === 11 && validarCPF(alunoData.cpf) && (
+              <p className="text-green-600 text-xs mt-1">✓ CPF válido</p>
+            )}
+          </div>
           <input type="email" placeholder="E-mail" required className={inputClass}
             value={alunoData.email} onChange={(e) => setAlunoData({ ...alunoData, email: e.target.value })} />
           <input type="tel" placeholder="Telefone" required className={inputClass}
             value={alunoData.telefone} onChange={(e) => setAlunoData({ ...alunoData, telefone: e.target.value })} />
-          <input type="date" placeholder="Data de nascimento" className={inputClass}
+          <input type="date" className={inputClass}
             value={alunoData.data_nasc} onChange={(e) => setAlunoData({ ...alunoData, data_nasc: e.target.value })} />
-          <input type="password" placeholder="Senha" required className={inputClass}
+          <input type="password" placeholder="Senha (mín. 6 caracteres)" required className={inputClass}
             value={alunoData.senha} onChange={(e) => setAlunoData({ ...alunoData, senha: e.target.value })} />
           <input type="password" placeholder="Confirmar senha" required className={inputClass}
             value={alunoData.confirmSenha} onChange={(e) => setAlunoData({ ...alunoData, confirmSenha: e.target.value })} />
@@ -131,7 +140,6 @@ export default function RegisterForm({ onSucesso }: Props) {
         </form>
       )}
 
-      {/* Formulário Professor */}
       {tipo === "professor" && (
         <form onSubmit={handleSubmitProf} className="space-y-4">
           <input type="text" placeholder="Nome completo" required className={inputClass}
@@ -144,7 +152,7 @@ export default function RegisterForm({ onSucesso }: Props) {
             value={profData.telefone} onChange={(e) => setProfData({ ...profData, telefone: e.target.value })} />
           <input type="text" placeholder="Especialidade (ex: Inglês, Espanhol)" className={inputClass}
             value={profData.especialidade} onChange={(e) => setProfData({ ...profData, especialidade: e.target.value })} />
-          <input type="password" placeholder="Senha" required className={inputClass}
+          <input type="password" placeholder="Senha (mín. 6 caracteres)" required className={inputClass}
             value={profData.senha} onChange={(e) => setProfData({ ...profData, senha: e.target.value })} />
           <input type="password" placeholder="Confirmar senha" required className={inputClass}
             value={profData.confirmSenha} onChange={(e) => setProfData({ ...profData, confirmSenha: e.target.value })} />
