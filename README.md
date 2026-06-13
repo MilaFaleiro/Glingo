@@ -11,11 +11,11 @@ O **Glingo** é um sistema web completo desenvolvido para modernizar o processo 
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
-- 📝 **Cadastro e login de alunos**
-- 📚 **Catálogo de turmas** com filtros por idioma e nível
-- ✅ **Sistema de matrícula** com controle de vagas em tempo real
-- 💬 **Sistema de atendimento** com troca de mensagens por IA
-- ⚙️ **Painel administrativo** com métricas e gerenciamento
-- 🌍 Idiomas disponíveis: **Inglês, Espanhol, Português e Mandarim**
+-  **Cadastro e login de alunos**
+-  **Catálogo de turmas** com filtros por idioma e nível
+-  **Sistema de matrícula** com controle de vagas em tempo real
+-  **Sistema de atendimento** com troca de mensagens por IA
+-  **Painel administrativo** com métricas e gerenciamento
+-  Idiomas disponíveis: **Inglês, Espanhol, Português e Mandarim**
